@@ -5,9 +5,10 @@ import math
 import time
 
 import rospy
-from nav_msgs.msg import Odometry
-from nav_msgs.msg import Path
-from geometry_msgs.msg import Twist, PoseStamped
+from nav_msgs.msg import Odometry, Path
+from std_msgs.msg import ColorRGBA
+from geometry_msgs.msg import Twist, PoseStamped, Point
+from visualization_msgs.msg import Marker
 from tf.transformations import *
 
 import sys
@@ -103,12 +104,11 @@ def desired_trajectory(pos, N:int, path:Path, count:int):
     dq_ref_ = np.concatenate((dq_ref_[0], dq_ref_), axis=None)
 
     vx_ref_ = dx_ref_*np.cos(dq_ref_) + dy_ref_*np.sin(dq_ref_)
-    vy_ref_ = -dx_ref_*np.sin(dq_ref_) + dy_ref_*np.cos(dq_ref_)
     omega_ref_ = dq_ref_
 
     x_ = np.array([x_ref_, y_ref_, q_ref_]).T
     x_ = np.concatenate((np.array([pos]), x_), axis=0)
-    u_ = np.array([vx_ref_, vy_ref_, omega_ref_]).T
+    u_ = np.array([vx_ref_, omega_ref_]).T
     return x_, u_
 
 
@@ -131,7 +131,7 @@ def nmpc_node():
     # Publisher
     pub_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=rate)
     pub_pre_path = rospy.Publisher('/predict_path', Path, queue_size=rate)
-    pub_path_now = rospy.Publisher('/path_now', Path, queue_size=1)
+    target_pose_pub = rospy.Publisher("/target_pose", Marker, queue_size=1)
     
     r = rospy.Rate(rate)
 
@@ -153,8 +153,6 @@ def nmpc_node():
 
     min_vx = rospy.get_param('/RobotConstraints/min_vx')
     max_vx = rospy.get_param('/RobotConstraints/max_vx')
-    min_vy = rospy.get_param('/RobotConstraints/min_vy')
-    max_vy = rospy.get_param('/RobotConstraints/max_vy')
     min_omega = rospy.get_param('/RobotConstraints/min_omega')
     max_omega = rospy.get_param('/RobotConstraints/max_omega')
 
@@ -164,7 +162,7 @@ def nmpc_node():
     pq = quaternion2Yaw(odom.pose.pose.orientation)
     pos = np.array([px, py, pq])
 
-    nmpc = NMPCController(pos, min_vx, max_vx, min_vy, max_vy, min_omega, max_omega, T, N) 
+    nmpc = NMPCController(pos, min_vx, max_vx, min_omega, max_omega, T, N) 
     t0 = 0
     count = 0
     while not rospy.is_shutdown():
@@ -190,11 +188,8 @@ def nmpc_node():
             # Publish cmd_vel
             vel_msg = Twist()
             vel_msg.linear.x = vel[0]
-            vel_msg.linear.y = vel[1]
-            vel_msg.angular.z = vel[2]
+            vel_msg.angular.z = vel[1]
             pub_vel.publish(vel_msg)
-
-            
 
             # Publish the predict path
             predict = nmpc.next_states
@@ -215,22 +210,19 @@ def nmpc_node():
                 predict_msg.poses.append(pose)
             pub_pre_path.publish(predict_msg)
 
-            # predict_msg2 = Path()
-            # predict_msg2.header.frame_id = "odom"
-            # predict_msg2.header.stamp = rospy.Time.now()
-        
-            # pose2 = PoseStamped()
-            # pose2.header = predict_msg2.header
-            # pose2.pose.position.x = next_traj[0,count]
-            # pose2.pose.position.y = next_traj[1,count]
-            # quat = quaternion_from_euler(0, 0, next_traj[2,count])
-            # pose2.pose.orientation.x = quat[0]
-            # pose2.pose.orientation.y = quat[1]
-            # pose2.pose.orientation.z = quat[2]
-            # pose2.pose.orientation.w = quat[3]
-
-            # predict_msg2.poses.append(pose2)
-            # pub_path_now.publish(predict_msg2)
+            # Publish the target pose
+            target_points = Marker()
+            target_points.header.frame_id = "odom"
+            target_points.ns = "points"
+            target_points.id = 1
+            target_points.type = Marker.POINTS
+            target_points.action = Marker.ADD
+            target_points.color = ColorRGBA(1, 1, 0, 1)
+            target_points.scale.x = 0.2
+            target_points.scale.y = 0.2
+            target_points.scale.z = 0.0
+            target_points.points.append(Point(next_traj[1,0], next_traj[1,1], 0))
+            target_pose_pub.publish(target_points)
             count += 1
 
         r.sleep()
