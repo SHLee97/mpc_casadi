@@ -49,11 +49,12 @@
             args="-urdf -model jackal -x $(arg x) -y $(arg y) -z $(arg z) -R 0 -P 0 -Y $(arg yaw) -param robot_description" />
         <!-- controller -->
         <node name="controller_spawner" pkg="controller_manager" type="spawner" args="joint_publisher velocity_controller"/>
+        <node name="odom_pub" pkg="tracking_mpc" type="odom.py"/>
         
         <!--  publish the state of a robot to tf2 -->
-        <!-- <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
             <param name="publish_frequency" type="double" value="50.0" />
-        </node> -->
+        </node>
         
     </group>
 
@@ -64,12 +65,12 @@
     </node> -->
 
     <!-- Trajectory -->
-    <!-- <node pkg="mpc_casadi" type="trajectory.py" name="trajectory" output="screen"/> -->
+    <node pkg="mpc_casadi" type="trajectory.py" name="trajectory" output="screen"/>
 
     <!-- Controller -->
-    <!-- <node pkg="mpc_casadi" type="nmpc_node.py" name="nmpc_node" output="screen" >
+    <node pkg="mpc_casadi" type="nmpc_node.py" name="nmpc_node" output="screen" >
         <param name="path_topic"  type="string"   value="/path" />
-    </node> -->
+    </node>
 
     <!-- Plotting -->
     <!-- <node pkg="mpc_casadi" type="plot_tracking.py" name="plotting" output="screen" /> -->

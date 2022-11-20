@@ -130,7 +130,7 @@ def nmpc_node():
     rospy.Subscriber(path_topic, Path, path_callback)
     
     # Publisher
-    pub_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=rate)
+    pub_vel = rospy.Publisher('/jackal/velocity_controller/cmd_vel', Twist, queue_size=rate)
     pub_pre_path = rospy.Publisher('/predict_path', Path, queue_size=rate)
     target_pose_pub = rospy.Publisher("/target_pose", Marker, queue_size=1)
     
