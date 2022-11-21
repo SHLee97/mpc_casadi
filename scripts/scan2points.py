@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     robot = rospy.get_param("~robot")
     scan_topic = robot + "/scan"
-    out_topic = robot + "/points"
+    out_topic = "/points"
     pc_pub = rospy.Publisher(out_topic, PointCloud2, queue_size=1)
     rospy.Subscriber(scan_topic, LaserScan, scan_cb, queue_size=1)
     

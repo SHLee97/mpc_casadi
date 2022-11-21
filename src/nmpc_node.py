@@ -51,11 +51,11 @@ def nmpc_node():
     rate = 10
 
     # Subscriber
-    rospy.Subscriber("/robot/odom", Odometry, odom_robot_callback)
-    rospy.Subscriber("/target/odom", Odometry, odom_target_callback)
+    rospy.Subscriber("/agent/odom", Odometry, odom_robot_callback)
+    rospy.Subscriber("/noisy_odom", Odometry, odom_target_callback)
 
     # Publisher
-    pub_vel = rospy.Publisher('/robot/cmd_vel', Twist, queue_size=rate)
+    pub_vel = rospy.Publisher('/agent/cmd_vel', Twist, queue_size=rate)
     pub_pre_path = rospy.Publisher('/predict_path', Path, queue_size=rate)
     target_pose_pub = rospy.Publisher("/target_pose", Marker, queue_size=1)
     

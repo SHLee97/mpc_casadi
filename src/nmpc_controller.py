@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import casadi as ca
 import numpy as np
 import math

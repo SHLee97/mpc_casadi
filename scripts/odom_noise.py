@@ -23,7 +23,7 @@ if __name__ == '__main__':
     
     robot = rospy.get_param("~robot")
     odom_topic = robot + "/odom"
-    out_topic = robot + "/noisy_odom"
+    out_topic = "/noisy_odom"
     pub = rospy.Publisher(out_topic, Odometry, queue_size=1)
     rospy.Subscriber(odom_topic, Odometry, callback)
 

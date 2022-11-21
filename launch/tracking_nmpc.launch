@@ -6,7 +6,7 @@
     <arg name="agent_ns" default="agent"/>
 
     <!-- Joystick Controller -->
-    <node name="ctrl_joy" pkg="mpc_casadi" type="jackal_joy_controller.py" output="screen">
+    <node name="ctrl_joy" pkg="mpc_casadi" type="mobile_joy_controller.py" output="screen">
         <param name="robot_one" value="$(arg target_ns)"/>
         <param name="robot_two" value="$(arg agent_ns)"/>
     </node>
