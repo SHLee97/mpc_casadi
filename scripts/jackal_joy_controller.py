@@ -38,8 +38,10 @@ def rpy_saturation(angle):
 class robot():
     def __init__(self):
         rospy.init_node('robot_controller', anonymous=True)
-        self.vel_pub = rospy.Publisher("/turtlebot3/cmd_vel", Twist, queue_size=10)
-        self.odom_sub = rospy.Subscriber('/turtlebot3/odom', Odometry, self.odom_callback)
+        self.robot_one = rospy.get_param("~robot_one")
+        self.robot_two = rospy.get_param("~robot_two")
+        self.robot_name = self.robot_one
+        self.set_topic()
         self.joy_sub = rospy.Subscriber('/joy', Joy, self.joy_callback)
 
         self.rate = rospy.Rate(30)
@@ -48,12 +50,27 @@ class robot():
         self.robot_check = False
         self.joy_check = False
 
+    def set_topic(self):
+        self.vel_pub_topic = "/" + self.robot_name + "/cmd_vel"
+        self.odom_sub_topic = "/" + self.robot_name + "/odom"
+        self.vel_pub = rospy.Publisher(self.vel_pub_topic, Twist, queue_size=10)
+        self.odom_sub = rospy.Subscriber(self.odom_sub_topic, Odometry, self.odom_callback)
+
     def odom_callback(self, msg):
         self.robot_check = True
 
     def joy_callback(self, msg):
         self.joy = msg
-        self.joy_check = True
+        if len(self.joy.axes)>0 or len(self.joy.buttons)>0 :
+            self.joy_check = True
+            if self.joy.buttons[6]==1:
+                print(self.robot_one)
+                self.robot_name = self.robot_one
+                self.set_topic()
+            if self.joy.buttons[7]==1:
+                print(self.robot_two)
+                self.robot_name = self.robot_two
+                self.set_topic()
     
 def input(rbt):
     k_vel_input = Twist()

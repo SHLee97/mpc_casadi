@@ -1,19 +1,21 @@
 <launch>
     <rosparam file="$(find mpc_casadi)/params/vast_constraints.yaml" command="load" />
+    <arg name="map_name" default="map1" doc="[map1, map2, map3]"/>
+    <arg name="target_ns" default="target"/>
+    <arg name="agent_ns" default="agent"/>
 
-    <node name="rvizualizer" pkg="rviz" type="rviz" args="-d $(find mpc_casadi)/rviz.rviz"/>
-
-    <node name="ctrl_joy" pkg="mpc_casadi" type="jackal_joy_controller.py" output="screen"/>
+    <!-- Joystick Controller -->
+    <node name="ctrl_joy" pkg="mpc_casadi" type="jackal_joy_controller.py" output="screen">
+        <param name="robot_one" value="$(arg target_ns)"/>
+        <param name="robot_two" value="$(arg agent_ns)"/>
+    </node>
     <node name="joy_ros" pkg="joy" type="joy_node">
         <param name="/dev" value="/dev/input/js0"/>
     </node>
 
-    <arg name="map_name" default="map1"/>
-
-    <!-- Load Vast Fake robot -->
+    <!-- Gazebo World -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <!-- <arg name="world_name" value="$(find gazebo_ros)/worlds/empty.world"/> -->
-        <arg name="world_name" value="$(find mpc_casadi)/simulation_setup/worlds/$(arg map_name)/map.world"/>
+        <arg name="world_name" value="$(find mpc_casadi)/worlds/$(arg map_name)/map.world"/>
         <arg name="paused" value="false"/>
         <arg name="use_sim_time" value="true"/>
         <arg name="gui" value="true"/>
@@ -21,42 +23,35 @@
         <arg name="debug" value="false"/>
     </include>
 
-    <arg name="target_ns" default="turtlebot3"/>
-    <arg name="agent_ns" default="jackal"/>
-
+    <!-- Spawn Target & Agent -->
     <group ns="$(arg target_ns)">
         <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
         <arg name="x" default="0.0"/>
         <arg name="y" default="0.0"/>
         <arg name="z" default="0.0"/>
         <arg name="yaw" default="0.0"/>
-
-        <param name="robot_description" command="$(find xacro)/xacro $(find mpc_casadi)/simulation_setup/robots/turtlebot3/urdf/turtlebot3_$(arg model).urdf.xacro" />
+        <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
         <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" 
-            args="-urdf -model turtlebot3_$(arg model) -x $(arg x) -y $(arg y) -z $(arg z) -R 0 -P 0 -Y $(arg yaw) -param robot_description" />
+            args="-urdf -model turtlebot3_$(arg target_ns) -x $(arg x) -y $(arg y) -z $(arg z) -R 0 -P 0 -Y $(arg yaw) -param robot_description" />
     </group>
-
     <group ns="$(arg agent_ns)">
-        <rosparam file="$(find mpc_casadi)/simulation_setup/robots/jackal/configs/jackal_params.yaml" />
-        <rosparam file="$(find mpc_casadi)/simulation_setup/robots/jackal/configs/jackal_control.yaml" />
+        <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
         <arg name="x" default="1.0"/>
         <arg name="y" default="1.0"/>
         <arg name="z" default="0.05"/>
         <arg name="yaw" default="0.0"/>
-
-        <param name="robot_description" command="$(find xacro)/xacro $(find mpc_casadi)/simulation_setup/robots/jackal/urdf/jackal.urdf.xacro" />
+        <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
         <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" 
-            args="-urdf -model jackal -x $(arg x) -y $(arg y) -z $(arg z) -R 0 -P 0 -Y $(arg yaw) -param robot_description" />
-        <!-- controller -->
-        <node name="controller_spawner" pkg="controller_manager" type="spawner" args="joint_publisher velocity_controller"/>
-        <node name="odom_pub" pkg="tracking_mpc" type="odom.py"/>
-        
-        <!--  publish the state of a robot to tf2 -->
-        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
-            <param name="publish_frequency" type="double" value="50.0" />
-        </node>
-        
+            args="-urdf -model turtlebot3_$(arg agent_ns) -x $(arg x) -y $(arg y) -z $(arg z) -R 0 -P 0 -Y $(arg yaw) -param robot_description" />
     </group>
+
+    <!-- Target Odometry gaussian noise model -->
+    <node name="noisy_odom" pkg="mpc_casadi" type="odom_noise.py">
+        <param name="robot" value="$(arg target_ns)" />
+    </node>
+    <node name="scan2points" pkg="mpc_casadi" type="scan2points.py">
+        <param name="robot" value="$(arg agent_ns)" />
+    </node>
 
     <!-- load VAST robot in Gazebo -->
     <!-- <include file="$(find vast_gazebo)/launch/robot.launch" />
@@ -65,13 +60,15 @@
     </node> -->
 
     <!-- Trajectory -->
-    <node pkg="mpc_casadi" type="trajectory.py" name="trajectory" output="screen"/>
+    <!-- <node pkg="mpc_casadi" type="trajectory.py" name="trajectory" output="screen"/> -->
 
     <!-- Controller -->
-    <node pkg="mpc_casadi" type="nmpc_node.py" name="nmpc_node" output="screen" >
+    <!-- <node pkg="mpc_casadi" type="nmpc_node.py" name="nmpc_node" output="screen" >
         <param name="path_topic"  type="string"   value="/path" />
-    </node>
+    </node> -->
 
     <!-- Plotting -->
     <!-- <node pkg="mpc_casadi" type="plot_tracking.py" name="plotting" output="screen" /> -->
+
+    <!-- <node name="rvizualizer" pkg="rviz" type="rviz" args="-d $(find mpc_casadi)/rviz.rviz"/> -->
 </launch>

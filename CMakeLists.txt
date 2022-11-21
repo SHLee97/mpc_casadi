@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   roscpp
   rospy
+  laser_geometry
 )
 
 catkin_package()
@@ -17,6 +18,7 @@ include_directories(${catkin_INCLUDE_DIRS})
 catkin_install_python(PROGRAMS
   src/trajectory.py
   src/nmpc_node.py
+  scripts/odom_noise.py
   plotting/plot_tracking.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
