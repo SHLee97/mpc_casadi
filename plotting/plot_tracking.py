@@ -7,17 +7,17 @@ from nav_msgs.msg import Odometry
 from nav_msgs.msg import Path
 from geometry_msgs.msg import Twist, PoseStamped
 
-# Odometry callback
-odom = Odometry()
-def odom_callback(data):
-    global odom
-    odom = data
+# Target odometry callback
+target_odom = Odometry()
+def odom_target_callback(data):
+    global target_odom
+    target_odom = data
 
-# Reference path callback
-path = Path()
-def path_callback(data):
-    global path
-    path = data
+# Robot odometry callback
+robot_odom = Odometry()
+def odom_robot_callback(data):
+    global robot_odom
+    robot_odom = data
 
 def quaternion2Yaw(orientation):
     q0 = orientation.x
@@ -27,16 +27,6 @@ def quaternion2Yaw(orientation):
 
     yaw = math.atan2(2.0*(q2*q3 + q0*q1), 1.0 - 2.0*(q1*q1 + q2*q2))
     return yaw
-
-def process_reference(path:Path):
-    traj = []
-    for i in range(len(path.poses)):
-        x = path.poses[i].pose.position.x
-        y = path.poses[i].pose.position.y
-        q = quaternion2Yaw(path.poses[i].pose.orientation)
-        traj.append([x,y,q])
-    traj = np.array(traj)
-    return traj
 
 def process_odometry(odom:Odometry):
     x = odom.pose.pose.position.x
@@ -50,23 +40,23 @@ def process_odometry(odom:Odometry):
     t = odom.header.stamp.to_sec()
     return [x, y, q], [vx, vy, w, t]
 
-poses = []  # store the robot position
-traj = []   # store the desired trajectory
-vels = []   # store the robot velocities
+robot_poses = []  # store the robot position
+target_poses = []   # store the desired trajectory
+#vels = []   # store the robot velocities
 
 def plotting():
     print("[INFO] Plot data!!!")
-    global traj
-    global poses
-    global vels
-    traj = np.array(traj)
-    poses = np.array(poses)
-    vels = np.array(vels)
+    global target_poses
+    global robot_poses
+    #global vels
+    target_poses = np.array(target_poses)
+    robot_poses = np.array(robot_poses)
+    #vels = np.array(vels)
 
     # Plot the tracked data
     plt.figure()
-    plt.plot(traj[:,0], traj[:,1], "-b", linewidth=2, label="Reference")
-    plt.plot(poses[:,0], poses[:,1], "--r", linewidth=2, label="NMPC")
+    plt.plot(target_poses[:,0], target_poses[:,1], "-b", linewidth=2, label="Reference")
+    plt.plot(robot_poses[:,0], robot_poses[:,1], "--r", linewidth=2, label="NMPC")
     plt.legend()
     plt.grid(True)
     plt.title("Tracked trajectory")
@@ -99,31 +89,33 @@ def plotting():
     # plt.ylabel("value [rad/s]")
     # plt.title("$\omega$")
 
-    plt.show()  
+    plt.show()
+    
 
 def plot_tracking():
     rospy.init_node("nmpc_node", anonymous=True)
     rate = 10
 
     # Subscriber
-    rospy.Subscriber("/odom", Odometry, odom_callback)
-    rospy.Subscriber("/path", Path, path_callback)
+    rospy.Subscriber("/robot/odom", Odometry, odom_robot_callback)
+    rospy.Subscriber("/target/odom", Odometry, odom_target_callback)
 
     r = rospy.Rate(rate)
 
     print("[INFO] Init Node Plotting...")
-    while(odom.header.frame_id == "" or path.header.frame_id == ""):
+    while(target_odom.header.frame_id == "" or robot_odom.header.frame_id == ""):
         r.sleep()
         continue
     print("[INFO] Ready to plotting!!!")
 
-    global traj
-    traj = process_reference(path)
+    global target_poses
+    global robot_poses
 
     while not rospy.is_shutdown():
-        pos, vel = process_odometry(odom)
-        poses.append(pos)
-        vels.append(vel)
+        pos2, _ = process_odometry(target_odom)
+        pos, _ = process_odometry(robot_odom)
+        robot_poses.append(pos)
+        target_poses.append(pos2)
 
         r.sleep()
         rospy.on_shutdown(plotting)

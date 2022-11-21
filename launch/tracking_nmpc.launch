@@ -1,5 +1,6 @@
 <launch>
-    <rosparam file="$(find mpc_casadi)/params/vast_constraints.yaml" command="load" />
+    <!-- Parameter -->
+    <rosparam file="$(find mpc_casadi)/params/constraints.yaml" command="load" />
     <arg name="map_name" default="map1" doc="[map1, map2, map3]"/>
     <arg name="target_ns" default="target"/>
     <arg name="agent_ns" default="agent"/>
@@ -49,26 +50,19 @@
     <node name="noisy_odom" pkg="mpc_casadi" type="odom_noise.py">
         <param name="robot" value="$(arg target_ns)" />
     </node>
+    <!-- Agent scan data to PointClouds -->
     <node name="scan2points" pkg="mpc_casadi" type="scan2points.py">
         <param name="robot" value="$(arg agent_ns)" />
     </node>
 
-    <!-- load VAST robot in Gazebo -->
-    <!-- <include file="$(find vast_gazebo)/launch/robot.launch" />
-    <node pkg="vast_fake" name="odom_path_node" type="odom_path_node">
-        <param name="length_path"       type="int"      value="-1" />
-    </node> -->
-
-    <!-- Trajectory -->
-    <!-- <node pkg="mpc_casadi" type="trajectory.py" name="trajectory" output="screen"/> -->
-
     <!-- Controller -->
-    <!-- <node pkg="mpc_casadi" type="nmpc_node.py" name="nmpc_node" output="screen" >
-        <param name="path_topic"  type="string"   value="/path" />
-    </node> -->
+    <node pkg="mpc_casadi" type="nmpc_node.py" name="nmpc_node" output="screen" >
+    </node>
+
+    <!-- Visualizer -->
+    <node name="visualizer" pkg="rviz" type="rviz" args="-d $(find mpc_casadi)/rviz.rviz"/>
 
     <!-- Plotting -->
     <!-- <node pkg="mpc_casadi" type="plot_tracking.py" name="plotting" output="screen" /> -->
 
-    <!-- <node name="rvizualizer" pkg="rviz" type="rviz" args="-d $(find mpc_casadi)/rviz.rviz"/> -->
 </launch>

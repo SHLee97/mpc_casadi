@@ -16,7 +16,6 @@ catkin_package()
 include_directories(${catkin_INCLUDE_DIRS})
 
 catkin_install_python(PROGRAMS
-  src/trajectory.py
   src/nmpc_node.py
   scripts/odom_noise.py
   plotting/plot_tracking.py

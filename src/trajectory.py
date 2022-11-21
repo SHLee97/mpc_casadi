@@ -16,13 +16,13 @@ def path_generator():
     while sim_time - iter*T >= 0:
         # Reference
         t_predict = T*iter
-        x_ref = 4*math.cos(2*math.pi/30*t_predict)
-        y_ref = 4*math.sin(2*math.pi/30*t_predict)
-        q_ref = 2*math.pi/30*t_predict + math.pi/2
+        #x_ref = 4*math.cos(2*math.pi/30*t_predict)
+        #y_ref = 4*math.sin(2*math.pi/30*t_predict)
+        #q_ref = 2*math.pi/30*t_predict + math.pi/2
 
-        # x_ref = 1/3*t_predict+5
-        # y_ref = -4*(math.cos(2*math.pi/30*t_predict)-1)+10
-        # q_ref = math.atan2(2*math.pi/30*4*math.sin(2*math.pi/30*t_predict), 1/3)
+        x_ref = 1/3*t_predict+5
+        y_ref = -4*(math.cos(2*math.pi/10*t_predict)-1)+3
+        q_ref = math.atan2(2*math.pi/30*4*math.sin(2*math.pi/30*t_predict), 1/3)
 
         # Convert to ROS message
         pose = PoseStamped()
