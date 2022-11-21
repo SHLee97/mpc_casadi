@@ -1,22 +1,58 @@
 <launch>
-    <rosparam file="$(find mpc_casadi)/params/vast_constraints.yaml" command="load" />
+    <!-- World -->
+    <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+    <arg name="first_tb3"  default="target"/>
+    <arg name="second_tb3" default="robot"/>
+    
+    <arg name="first_tb3_x_pos" default="0.0"/>
+    <arg name="first_tb3_y_pos" default="0.0"/>
+    <arg name="first_tb3_z_pos" default=" 0.0"/>
+    <arg name="first_tb3_yaw"   default=" 0.0"/>
 
-    <!-- Load Vast Fake robot -->
-    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_empty_world.launch" />
+    <arg name="second_tb3_x_pos" default=" -2.0"/>
+    <arg name="second_tb3_y_pos" default="-3.0"/>
+    <arg name="second_tb3_z_pos" default=" 0.0"/>
+    <arg name="second_tb3_yaw"   default=" 0.0"/>
 
-    <!-- load VAST robot in Gazebo -->
-    <!-- <include file="$(find vast_gazebo)/launch/robot.launch" />
-    <node pkg="vast_fake" name="odom_path_node" type="odom_path_node">
-        <param name="length_path"       type="int"      value="-1" />
-    </node> -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/empty.world"/>
+        <arg name="paused" value="false"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="gui" value="true"/>
+        <arg name="headless" value="false"/>
+        <arg name="debug" value="false"/>
+    </include>  
 
-    <!-- Trajectory -->
-    <node pkg="mpc_casadi" type="trajectory.py" name="trajectory" output="screen"/>
+    <group ns = "$(arg first_tb3)">
+        <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+        <param name="publish_frequency" type="double" value="50.0" />
+        <param name="tf_prefix" value="$(arg first_tb3)" />
+        </node>
+        
+        <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg first_tb3) -x $(arg first_tb3_x_pos) -y $(arg first_tb3_y_pos) -z $(arg first_tb3_z_pos) -Y $(arg first_tb3_yaw) -param robot_description" />
+    </group>
+
+    <group ns = "$(arg second_tb3)">
+        <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+        <param name="publish_frequency" type="double" value="50.0" />
+        <param name="tf_prefix" value="$(arg second_tb3)" />
+        </node>
+
+        <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg second_tb3) -x $(arg second_tb3_x_pos) -y $(arg second_tb3_y_pos) -z $(arg second_tb3_z_pos) -Y $(arg second_tb3_yaw) -param robot_description" />
+    </group>
+    <!-- Controller Parameter -->
+    <rosparam file="$(find mpc_casadi)/params/constraints.yaml" command="load" />
 
     <!-- Controller -->
     <node pkg="mpc_casadi" type="nmpc_node.py" name="nmpc_node" output="screen" >
-        <param name="path_topic"  type="string"   value="/path" />
     </node>
+
+    <!-- Visualizer -->
+    <!-- <node name="visualizer" pkg="rviz" type="rviz" args="-d $(find mpc_casadi)/rviz.rviz"/> -->
 
     <!-- Plotting -->
     <node pkg="mpc_casadi" type="plot_tracking.py" name="plotting" output="screen" />

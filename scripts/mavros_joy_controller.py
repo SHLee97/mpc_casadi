@@ -61,7 +61,7 @@ class robot():
     def __init__(self):
         rospy.init_node('robot_controller', anonymous=True)
         self.parent_frame_id = rospy.get_param("/mobile_robot_vel_topic", "/mobile_base/commands/velocity")
-        self.mobile_robot_vel_pub = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
+        self.mobile_robot_vel_pub = rospy.Publisher("/target/cmd_vel", Twist, queue_size=10)
         self.position_pub = rospy.Publisher('mavros/setpoint_position/local', PoseStamped, queue_size=10)
         self.rate_pub = rospy.Publisher('/mavros/setpoint_attitude/cmd_vel', TwistStamped, queue_size=10)
         self.thrust_pub = rospy.Publisher('/mavros/setpoint_attitude/thrust', Thrust, queue_size=10)

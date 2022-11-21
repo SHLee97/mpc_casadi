@@ -3,7 +3,7 @@ import numpy as np
 import math
 
 class NMPCController:
-    def __init__(self, init_pos, min_vx, max_vx, min_omega, max_omega,
+    def __init__(self, robot_pos, min_vx, max_vx, min_omega, max_omega,
                 T=0.02, N=30, Q=np.diag([50.0, 50.0, 10.0]), R=np.diag([1.0, 1.0])):
         self.T = T          # time step
         self.N = N          # horizon length
@@ -22,7 +22,7 @@ class NMPCController:
         self.max_domega = math.pi/6
     
         # The history states and controls
-        self.next_states = np.ones((self.N+1, 3))*init_pos
+        self.next_states = np.ones((self.N+1, 3))*robot_pos
         self.u0 = np.zeros((self.N, 2))
 
         self.setup_controller()
@@ -40,6 +40,8 @@ class NMPCController:
         self.opt_controls = self.opti.variable(self.N, 2)
         vx = self.opt_controls[0]
         omega = self.opt_controls[1]
+
+        self.opt_x_ref = self.opti.parameter(2, 3)
 
         # # the first derivative velocity
         # self.opt_dcontrols = self.opti.variable(self.N, 3)
@@ -60,8 +62,7 @@ class NMPCController:
         ])
 
         # parameters, these parameters are the reference trajectories of the pose and inputs
-        self.opt_u_ref = self.opti.parameter(self.N, 2)
-        self.opt_x_ref = self.opti.parameter(self.N+1, 3)
+        # self.opt_u_ref = self.opti.parameter(self.N, 2)
 
         # initial condition
         self.opti.subject_to(self.opt_states[0, :] == self.opt_x_ref[0, :])
@@ -96,10 +97,10 @@ class NMPCController:
 
         self.opti.solver('ipopt', opts_setting)
     
-    def solve(self, next_trajectories, next_controls):
+    def solve(self, next_trajectories):
         ## set parameter, here only update initial state of x (x0)
+
         self.opti.set_value(self.opt_x_ref, next_trajectories)
-        self.opti.set_value(self.opt_u_ref, next_controls)
         
         ## provide the initial guess of the optimization targets
         self.opti.set_initial(self.opt_states, self.next_states)
