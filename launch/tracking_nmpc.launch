@@ -16,7 +16,7 @@
 
     <!-- Gazebo World -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <arg name="world_name" value="$(find mpc_casadi)/worlds/$(arg map_name)/map.world"/>
+        <arg name="world_name" value="$(find mpc_casadi)/simulation_setup/worlds/$(arg map_name)/map.world"/>
         <arg name="paused" value="false"/>
         <arg name="use_sim_time" value="true"/>
         <arg name="gui" value="true"/>
@@ -41,7 +41,7 @@
         <arg name="y" default="1.0"/>
         <arg name="z" default="0.05"/>
         <arg name="yaw" default="0.0"/>
-        <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+        <param name="robot_description" command="$(find xacro)/xacro --inorder $(find mpc_casadi)/simulation_setup/robots/turtlebot3_$(arg model)_up_scan.urdf.xacro" />
         <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" 
             args="-urdf -model turtlebot3_$(arg agent_ns) -x $(arg x) -y $(arg y) -z $(arg z) -R 0 -P 0 -Y $(arg yaw) -param robot_description" />
     </group>
