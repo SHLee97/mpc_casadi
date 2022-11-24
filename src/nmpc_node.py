@@ -10,26 +10,33 @@ from std_msgs.msg import ColorRGBA
 from geometry_msgs.msg import Twist, PoseStamped, Point
 from visualization_msgs.msg import Marker
 from tf.transformations import *
+from decomp_ros_msgs.msg import PolyhedronArray
 
 import sys
-# sys.path.append("/home/lsh/study_ws/src/mpc_casadi/src/")
-sys.path.append("/home/dklee98/git/term_ws/src/mpc_casadi/src/")
+sys.path.append("/home/lsh/ee688_ws/src/mpc_casadi/src/")
+# sys.path.append("/home/dklee/git/term_ws/src/mpc_casadi/src/")
 try:
     from nmpc_controller import NMPCController
 except:
     raise
 
 # Odometry callback
-robot_odom = Odometry()
-def odom_robot_callback(data):
-    global robot_odom
-    robot_odom = data
+agent_odom = Odometry()
+def odom_agent_callback(data):
+    global agent_odom
+    agent_odom = data
 
 # Target callback
 target_odom = Odometry()
 def odom_target_callback(data):
     global target_odom
     target_odom = data
+
+sfc = PolyhedronArray()
+def sfc_callback(data):
+    global sfc
+    sfc = data
+    
 
 def quaternion2Yaw(orientation):
     q0 = orientation.x
@@ -51,8 +58,10 @@ def nmpc_node():
     rate = 10
 
     # Subscriber
-    rospy.Subscriber("/agent/odom", Odometry, odom_robot_callback)
-    rospy.Subscriber("/noisy_odom", Odometry, odom_target_callback)
+    rospy.Subscriber("/agent/odom", Odometry, odom_agent_callback)
+    # rospy.Subscriber("/noisy_odom", Odometry, odom_target_callback)
+    rospy.Subscriber("/target/odom", Odometry, odom_target_callback)
+    rospy.Subscriber("/polyhedron_array", PolyhedronArray, sfc_callback)
 
     # Publisher
     pub_vel = rospy.Publisher('/agent/cmd_vel', Twist, queue_size=rate)
@@ -62,7 +71,7 @@ def nmpc_node():
     r = rospy.Rate(rate)
 
     print("[INFO] Init Node...")
-    while(robot_odom.header.frame_id == "" or target_odom.header.frame_id == ""):
+    while(agent_odom.header.frame_id == "" or target_odom.header.frame_id == ""):
         r.sleep()
         continue
     print("[INFO] NMPC Node is ready!!!")
@@ -77,27 +86,25 @@ def nmpc_node():
     T = 1/rate
     N = 10      # Predict horizon
 
-    min_vx = rospy.get_param('/RobotConstraints/min_vx')
-    max_vx = rospy.get_param('/RobotConstraints/max_vx')
-    min_omega = rospy.get_param('/RobotConstraints/min_omega')
-    max_omega = rospy.get_param('/RobotConstraints/max_omega')
+    min_vx = rospy.get_param('/agentConstraints/min_vx')
+    max_vx = rospy.get_param('/agentConstraints/max_vx')
+    min_omega = rospy.get_param('/agentConstraints/min_omega')
+    max_omega = rospy.get_param('/agentConstraints/max_omega')
 
-    # Create the current robot position
-    px = robot_odom.pose.pose.position.x
-    py = robot_odom.pose.pose.position.y
-    pq = quaternion2Yaw(robot_odom.pose.pose.orientation)
-    robot_pos = np.array([px, py, pq])
+    # Create the current agent position
+    px = agent_odom.pose.pose.position.x
+    py = agent_odom.pose.pose.position.y
+    pq = quaternion2Yaw(agent_odom.pose.pose.orientation)
+    agent_pos = np.array([px, py, pq])
 
-
-# 헤드스핀 존나 도는거만 좀 해결봐야쓰겄네 아마 -pi~pi 그 문제 일거임 ㅇㅇ
-    nmpc = NMPCController(robot_pos, min_vx, max_vx, min_omega, max_omega, T, N) 
+    nmpc = NMPCController(agent_pos, min_vx, max_vx, min_omega, max_omega, T, N) 
     t0 = 0
     count = 0
     while not rospy.is_shutdown():
         # Current position
-        px = robot_odom.pose.pose.position.x
-        py = robot_odom.pose.pose.position.y
-        pq = quaternion2Yaw(robot_odom.pose.pose.orientation)
+        px = agent_odom.pose.pose.position.x
+        py = agent_odom.pose.pose.position.y
+        pq = quaternion2Yaw(agent_odom.pose.pose.orientation)
         pos = np.array([px, py, pq])
 
         # Create the current target position
@@ -112,9 +119,10 @@ def nmpc_node():
         # next_traj = correct_state(nmpc.next_states, next_traj) #yaw check
         st = time.time()
         # vel = nmpc.solve(next_traj)
-        vel = nmpc.solve(next_traj)
+        vel = nmpc.solve(next_traj, sfc)
         
         print("Processing time: {:.2f}s".format(time.time()-st))
+        print(vel)
         # Publish cmd_vel
         vel_msg = Twist()
         vel_msg.linear.x = vel[0]
