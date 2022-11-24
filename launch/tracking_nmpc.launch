@@ -56,7 +56,11 @@
     </node>
 
     <!-- Controller -->
+    <!-- <node pkg="mpc_casadi" type="nmpc_node.py" name="nmpc_node" output="screen" >
+    </node> -->
+
     <node pkg="mpc_casadi" type="nmpc_node.py" name="nmpc_node" output="screen" >
+        <param name="robot" value="$(arg agent_ns)" />
     </node>
 
     <!-- Visualizer -->
