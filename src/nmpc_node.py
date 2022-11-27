@@ -13,8 +13,8 @@ from tf.transformations import *
 from decomp_ros_msgs.msg import PolyhedronArray
 
 import sys
-sys.path.append("/home/lsh/ee688_ws/src/mpc_casadi/src/")
-# sys.path.append("/home/dklee/git/term_ws/src/mpc_casadi/src/")
+# sys.path.append("/home/lsh/ee688_ws/src/mpc_casadi/src/")
+sys.path.append("/home/dklee98/git/term_ws/src/mpc_casadi/src/")
 try:
     from nmpc_controller import NMPCController
 except:
