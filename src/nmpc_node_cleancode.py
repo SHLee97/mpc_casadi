@@ -157,7 +157,8 @@ class nmpc_node():
             if d < min_d:
                 min_d = d
                 min_idx = i
-        print(min_d, min_idx)
+        yaw_diff = nyaw - theta
+        # print(min_d, min_idx)
         return min_idx
 
     def correct_state(self, traj):
