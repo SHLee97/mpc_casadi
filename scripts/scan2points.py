@@ -30,7 +30,7 @@ def scan_cb(msg):
     points_list = []
     for point in pc2.read_points(pc2_msg, skip_nans=True):
         points_list.append([point[0], point[1], point[2], point[3]])
-    print(len(points_list))
+    # print(len(points_list))
     pc_pub.publish(pc2_msg)
 
 if __name__ == '__main__':
