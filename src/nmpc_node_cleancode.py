@@ -14,8 +14,8 @@ from decomp_ros_msgs.msg import PolyhedronArray
 
 import sys
 import signal
-# sys.path.append("/home/lsh/study_ws/src/mpc_casadi/src/")
-sys.path.append("/home/dklee98/git/term_ws/src/mpc_casadi/src/")
+sys.path.append("/home/lsh/ee688_ws/src/mpc_casadi/src/")
+# sys.path.append("/home/dklee98/git/term_ws/src/mpc_casadi/src/")
 try:
     from nmpc_controller import NMPCController
 except:
@@ -65,7 +65,7 @@ class nmpc_node():
         self.d_candidate = []
         self.radius = 1
 
-        self.verbose = False
+        self.verbose = True
 
         self.initailize()
 
@@ -88,7 +88,7 @@ class nmpc_node():
         print("[INFO] Wait 10s ...") 
         t0 = time.time()
         while time.time() - t0 < 1:
-            print(time.time() - t0)
+            # print(time.time() - t0)
             continue
 
         robot_pose_init = self.get_pose(self.robot_odom)
@@ -97,6 +97,7 @@ class nmpc_node():
         if self.mode == MODE_NMPC:
             self.nmpc = NMPCController(robot_pose_init, self.min_vx, self.max_vx,
                                 self.min_omega, self.max_omega, self.dt, self.N)
+            print("MPC set controller")
         elif self.mode == MODE_TUBE:
             print("TBC set controller")
 
@@ -116,6 +117,8 @@ class nmpc_node():
 
         t0 = time.time()
         if self.mode == MODE_NMPC:
+            self.nmpc = NMPCController(pose_cur, self.min_vx, self.max_vx,
+                                self.min_omega, self.max_omega, self.dt, self.N)
             out_vel = self.nmpc.solve(next_traj, self.sfc)
             out_predict_path = self.nmpc.next_states
         elif self.mode == MODE_TUBE:
