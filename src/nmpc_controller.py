@@ -8,7 +8,7 @@ import time
 
 class NMPCController:
     def __init__(self, robot_pos, min_vx, max_vx, min_omega, max_omega,
-                T=0.02, N=30, Q=np.diag([1.0, 1.0, 1.0]), R=np.diag([1.0, 1.0])):
+                T=0.02, N=30, Q=np.diag([1.0, 1.0, 5.0]), R=np.diag([1.0, 1.0])):
         self.T = T          # time step
         self.N = N          # horizon length
 

@@ -32,5 +32,9 @@
                 </collision>
             </link>
         </model>
+        <include>
+            <uri>model://drc_practice_blue_cylinder</uri>      
+            <name>blue_cylinder</name>
+        </include>
 </world>
 </sdf>
