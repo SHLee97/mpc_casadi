@@ -1,7 +1,7 @@
 <launch>
     <!-- Parameter -->
     <rosparam file="$(find mpc_casadi)/params/constraints.yaml" command="load" />
-    <arg name="map_name" default="map1" doc="[map1, map2, map3]"/>
+    <arg name="map_name" default="map2" doc="[map1, map2, map3]"/>
     <arg name="target_ns" default="target"/>
     <arg name="agent_ns" default="agent"/>
 
