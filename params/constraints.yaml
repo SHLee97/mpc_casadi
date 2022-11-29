@@ -1,5 +1,7 @@
 agentConstraints:
-  min_vx: -1.0
-  max_vx: 1.0
-  min_omega: -0.7854
-  max_omega: 0.7854
+  min_vx:  -2.0 #-1.0
+  max_vx: 2.0 #1.0
+  min_omega: -1.5 #-0.7854
+  max_omega: 1.5 #0.7854
+  polygon_check: 20
+  polygon_check_radius: 0.5

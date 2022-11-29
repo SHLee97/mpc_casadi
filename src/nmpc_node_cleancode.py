@@ -14,8 +14,8 @@ from decomp_ros_msgs.msg import PolyhedronArray
 
 import sys
 import signal
-# sys.path.append("/home/lsh/ee688_ws/src/mpc_casadi/src/")
-sys.path.append("/home/dklee98/git/term_ws/src/mpc_casadi/src/")
+sys.path.append("/home/lsh/ee688_ws/src/mpc_casadi/src/")
+# sys.path.append("/home/dklee98/git/term_ws/src/mpc_casadi/src/")
 try:
     from nmpc_controller import NMPCController
 except:
@@ -44,7 +44,9 @@ class nmpc_node():
 
         # Subscriber
         rospy.Subscriber("/" + robot_name + "/odom", Odometry, self.odom_agent_cb)
-        rospy.Subscriber("/noisy_odom", Odometry, self.odom_target_cb)
+        # r        rospy.Subscriber("/noisy_odom", Odometry, self.odom_target_cb)
+        # rospy.Subscriber("/target/odom", Odometry, self.odom_target_cb)
+        rospy.Subscriber("/target_detect_odom", Odometry, self.odom_target_cb)
         rospy.Subscriber("/polyhedron_array", PolyhedronArray, self.sfc_cb)
 
         # Publisher
@@ -119,7 +121,7 @@ class nmpc_node():
         if self.mode == MODE_NMPC:
             self.nmpc = NMPCController(pose_cur, self.min_vx, self.max_vx,
                                 self.min_omega, self.max_omega, self.dt, self.N)
-            out_vel = self.nmpc.solve(next_traj, self.sfc)
+            self.out_vel = self.nmpc.solve(next_traj, self.sfc)
             out_predict_path = self.nmpc.next_states
         elif self.mode == MODE_TUBE:
             print("TBC solve")
@@ -127,7 +129,7 @@ class nmpc_node():
         if self.verbose:
             print("Processing time: {:.2f}s".format(time.time()-t0))
 
-        self.visualize(out_vel, out_predict_path, tar_idx)
+        self.visualize(self.out_vel, out_predict_path, tar_idx)
         
         self.d_candidate = []
 

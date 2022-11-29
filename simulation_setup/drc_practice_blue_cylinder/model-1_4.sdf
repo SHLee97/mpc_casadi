@@ -19,5 +19,8 @@
         </geometry>
       </collision>
     </link>
+    <static>1</static>
+    <allow_auto_disable>1</allow_auto_disable>
+    <plugin name='push_animate' filename='libanimated_box.so'/>
   </model>
 </sdf>

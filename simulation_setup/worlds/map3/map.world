@@ -7,6 +7,10 @@
         <include>
             <uri>model://sun</uri>
         </include>
+        <include>
+            <uri>model://drc_practice_blue_cylinder</uri>    
+            <name>blue_cylinder1</name>
+        </include>
         <scene>
             <ambient>0.0 0.0 0.0 1.0</ambient>
             <shadows>0</shadows>

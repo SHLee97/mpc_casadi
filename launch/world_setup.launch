@@ -27,7 +27,8 @@
     <!-- Spawn Target & Agent -->
     <group ns="$(arg target_ns)">
         <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
-        <arg name="x" default="1.0"/>
+        <arg name="x" default="1.5"/>
+        <!-- <arg name="x" default="5"/> -->
         <arg name="y" default="1.0"/>
         <arg name="z" default="0.0"/>
         <arg name="yaw" default="1.57"/>
@@ -37,8 +38,8 @@
     </group>
     <group ns="$(arg agent_ns)">
         <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
-        <arg name="x" default="0.0"/>
-        <arg name="y" default="0.0"/>
+        <arg name="x" default="2.0"/>
+        <arg name="y" default="-1.0"/>
         <arg name="z" default="0.0"/>
         <arg name="yaw" default="1.57"/>
         <param name="robot_description" command="$(find xacro)/xacro --inorder $(find mpc_casadi)/simulation_setup/robots/turtlebot3_$(arg model)_up_scan.urdf.xacro" />
