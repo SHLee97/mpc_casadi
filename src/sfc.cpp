@@ -31,7 +31,8 @@ int main(int argc, char ** argv){
   ros::NodeHandle nh("~");
   ros::Subscriber cloud_sub = nh.subscribe<sensor_msgs::PointCloud2>("/points", 10, cloud_cb);
   ros::Subscriber agent_odom_sub = nh.subscribe<nav_msgs::Odometry>("/agent/odom", 10, agent_odom_cb);
-  ros::Subscriber target_odom_sub = nh.subscribe<nav_msgs::Odometry>("/target/odom", 10, target_odom_cb);
+  // ros::Subscriber target_odom_sub = nh.subscribe<nav_msgs::Odometry>("/target/odom", 10, target_odom_cb);
+  ros::Subscriber target_odom_sub = nh.subscribe<nav_msgs::Odometry>("/noisy_odom", 10, target_odom_cb);
   ros::Publisher target_detect_pub = nh.advertise<nav_msgs::Odometry>("/target_detect_odom", 1, true);
   ros::Publisher poly_pub = nh.advertise<decomp_ros_msgs::PolyhedronArray>("/polyhedron_array", 1, true);
   int k = 20;
@@ -68,7 +69,7 @@ int main(int argc, char ** argv){
         if(cs.inside(dummy))
           count=count+1;
       }
-      if (count>k/2){
+      if (count>k/3){
         poly_msg.header.frame_id = "odom";
         poly_pub.publish(poly_msg);
         target_detect_pub.publish(target_odom);

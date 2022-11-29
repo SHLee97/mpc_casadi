@@ -8,7 +8,7 @@ import time
 
 class NMPCController:
     def __init__(self, robot_pos, min_vx, max_vx, min_omega, max_omega,
-                T=0.02, N=30, Q=np.diag([2.5, 2.5, 5.0]), R=np.diag([0.5, 1.0])):
+                T=0.02, N=30, Q=np.diag([2.0, 2.0, 5.0]), R=np.diag([1.0, 1.0])):
         self.T = T          # time step
         self.N = N          # horizon length
 
@@ -102,19 +102,18 @@ class NMPCController:
         for i in range(self.N-1):
                 for j in range(len(sfc.polyhedrons[0].normals)):
                     if sfc.polyhedrons[0].normals[j].z == 0.0:
-                        # self.opti.subject_to((self.opt_states[i+1, 0])*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1])*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
-                        self.opti.subject_to((self.opt_states[i+1, 0]+0.20)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1])*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
-                        self.opti.subject_to((self.opt_states[i+1, 0]-0.20)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1])*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
-                        # self.opti.subject_to((self.opt_states[i+1, 0]-0.2)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1])*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
-                        # self.opti.subject_to((self.opt_states[i+1, 0]-0.2)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]-0.2)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
-
+                        self.opti.subject_to((self.opt_states[i+1, 0]+ca.cos(self.opt_states[i+1, 2])*0.075)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]-ca.sin(self.opt_states[i+1, 2])*0.15)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
+                        self.opti.subject_to((self.opt_states[i+1, 0]+ca.cos(self.opt_states[i+1, 2])*0.075)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]+ca.sin(self.opt_states[i+1, 2])*0.15)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
+                        # self.opti.subject_to((self.opt_states[i+1, 0]-ca.cos(self.opt_states[i+1, 2])*0.2)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]-ca.sin(self.opt_states[i+1, 2])*0.15)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
+                        # self.opti.subject_to((self.opt_states[i+1, 0]-ca.cos(self.opt_states[i+1, 2])*0.2)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]+ca.sin(self.opt_states[i+1, 2])*0.15)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
+                        # self.opti.subject_to((self.opt_states[i+1, 0])*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]+0.25)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
         ## solve the problem
         try:
             # print('solve success')
             sol = self.opti.solve()
             self.tmp_ = sol
         except:
-            # print('solve failed!!!!!!!!!')
+            print('solve failed!!!!!!!!!')
             return self.u0[0,:]
             pass
         

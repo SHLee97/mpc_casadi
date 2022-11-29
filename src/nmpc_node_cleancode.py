@@ -44,7 +44,7 @@ class nmpc_node():
 
         # Subscriber
         rospy.Subscriber("/" + robot_name + "/odom", Odometry, self.odom_agent_cb)
-        # r        rospy.Subscriber("/noisy_odom", Odometry, self.odom_target_cb)
+        # rospy.Subscriber("/noisy_odom", Odometry, self.odom_target_cb)
         # rospy.Subscriber("/target/odom", Odometry, self.odom_target_cb)
         rospy.Subscriber("/target_detect_odom", Odometry, self.odom_target_cb)
         rospy.Subscriber("/polyhedron_array", PolyhedronArray, self.sfc_cb)
@@ -64,8 +64,8 @@ class nmpc_node():
         self.N = 10                     # Predict horizon
 
         ## maintain circle range
-        self.d_candidate = []
-        self.radius = 1
+        self.d_candidate = []  
+        self.radius = 0.5
 
         self.verbose = True
 

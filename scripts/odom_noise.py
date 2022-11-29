@@ -6,7 +6,7 @@ from nav_msgs.msg import Odometry
 
 # a callback for Gazebo odometry data
 def callback(data):
-    std = 0.1
+    std = 0.05
     input_odom = data
     input_odom.pose.pose.position.x += np.random.normal(0,std)
     input_odom.pose.pose.position.y += np.random.normal(0,std)
