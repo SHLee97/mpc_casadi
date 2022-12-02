@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <model name="drc_practice_blue_cylinder_h1">
+    <static>true</static>
+    <link name="link">
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://drc_practice_blue_cylinder_h1/meshes/cylinder.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="collision">
+        <geometry>
+          <mesh>
+            <uri>model://drc_practice_blue_cylinder_h1/meshes/cylinder.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+    <static>1</static>
+    <allow_auto_disable>1</allow_auto_disable>
+    <plugin name='push_animate' filename='libanimated_box_h1.so'/>
+  </model>
+</sdf>

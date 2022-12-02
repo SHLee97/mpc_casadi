@@ -102,11 +102,15 @@ class NMPCController:
         for i in range(self.N-1):
                 for j in range(len(sfc.polyhedrons[0].normals)):
                     if sfc.polyhedrons[0].normals[j].z == 0.0:
-                        self.opti.subject_to((self.opt_states[i+1, 0]+ca.cos(self.opt_states[i+1, 2])*0.075)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]-ca.sin(self.opt_states[i+1, 2])*0.15)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
-                        self.opti.subject_to((self.opt_states[i+1, 0]+ca.cos(self.opt_states[i+1, 2])*0.075)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]+ca.sin(self.opt_states[i+1, 2])*0.15)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
-                        # self.opti.subject_to((self.opt_states[i+1, 0]-ca.cos(self.opt_states[i+1, 2])*0.2)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]-ca.sin(self.opt_states[i+1, 2])*0.15)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
-                        # self.opti.subject_to((self.opt_states[i+1, 0]-ca.cos(self.opt_states[i+1, 2])*0.2)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]+ca.sin(self.opt_states[i+1, 2])*0.15)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
-                        # self.opti.subject_to((self.opt_states[i+1, 0])*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]+0.25)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
+                        # self.opti.subject_to((self.opt_states[i+1, 0]+(ca.cos(self.opt_states[i+1, 2])*0.1-ca.sin(self.opt_states[i+1, 2])*0.2))*sfc.polyhedrons[0].normals[j].x+
+                        #                     (self.opt_states[i+1, 1]+(ca.sin(self.opt_states[i+1, 2])*0.1+ca.cos(self.opt_states[i+1, 2])*0.2))*sfc.polyhedrons[0].normals[j].y
+                        #                     <=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
+
+                        # self.opti.subject_to((self.opt_states[i+1, 0]+(ca.cos(self.opt_states[i+1, 2])*0.1+ca.sin(self.opt_states[i+1, 2])*0.2))*sfc.polyhedrons[0].normals[j].x+
+                        #                     (self.opt_states[i+1, 1]+(ca.sin(self.opt_states[i+1, 2])*0.1-ca.cos(self.opt_states[i+1, 2])*0.2))*sfc.polyhedrons[0].normals[j].y
+                        #                     <=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
+                        self.opti.subject_to((self.opt_states[i+1, 0]+ca.cos(self.opt_states[i+1, 2])*0.1)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]-ca.sin(self.opt_states[i+1, 2])*0.2)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
+                        self.opti.subject_to((self.opt_states[i+1, 0]+ca.cos(self.opt_states[i+1, 2])*0.1)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]+ca.sin(self.opt_states[i+1, 2])*0.2)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
         ## solve the problem
         try:
             # print('solve success')

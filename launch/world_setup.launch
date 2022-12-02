@@ -60,7 +60,7 @@
     <node name="visualizer" pkg="rviz" type="rviz" args="-d $(find mpc_casadi)/rviz.rviz"/>
 
     <!-- SFC -->
-    <node pkg="mpc_casadi" type="sfc_node" name="sfc_node" output="screen">
+    <node pkg="mpc_casadi" type="collision_free_node" name="collision_free_node" output="screen">
     </node>
 
     <!-- Plotting -->

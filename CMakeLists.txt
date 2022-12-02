@@ -27,5 +27,5 @@ catkin_install_python(PROGRAMS
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-add_executable(sfc_node src/sfc.cpp)
-target_link_libraries(sfc_node ${catkin_LIBRARIES} ${EIGEN3_LIBS} ${OpenCV_LIBS})
+add_executable(collision_free_node src/collision_free.cpp)
+target_link_libraries(collision_free_node ${catkin_LIBRARIES} ${EIGEN3_LIBS} ${OpenCV_LIBS})

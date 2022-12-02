@@ -33,7 +33,7 @@ int main(int argc, char ** argv){
   ros::Subscriber agent_odom_sub = nh.subscribe<nav_msgs::Odometry>("/agent/odom", 10, agent_odom_cb);
   // ros::Subscriber target_odom_sub = nh.subscribe<nav_msgs::Odometry>("/target/odom", 10, target_odom_cb);
   ros::Subscriber target_odom_sub = nh.subscribe<nav_msgs::Odometry>("/noisy_odom", 10, target_odom_cb);
-  ros::Publisher target_detect_pub = nh.advertise<nav_msgs::Odometry>("/target_detect_odom", 1, true);
+  ros::Publisher target_detect_pub = nh.advertise<nav_msgs::Odometry>("/detected_odom", 1, true);
   ros::Publisher poly_pub = nh.advertise<decomp_ros_msgs::PolyhedronArray>("/polyhedron_array", 1, true);
   int k = 20;
   double r = 0.5;
@@ -57,7 +57,7 @@ int main(int argc, char ** argv){
       //Using ellipsoid decomposition
       EllipsoidDecomp2D decomp_util;
       decomp_util.set_obs(obs2d);
-      decomp_util.set_local_bbox(Vec2f(1, 2));
+      decomp_util.set_local_bbox(Vec2f(3, 3));
       decomp_util.dilate(path); //Set max iteration number of 10, do fix the path
       decomp_ros_msgs::PolyhedronArray poly_msg = DecompROS::polyhedron_array_to_ros(decomp_util.get_polyhedrons());
       auto polys = decomp_util.get_polyhedrons();

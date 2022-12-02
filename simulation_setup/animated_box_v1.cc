@@ -34,33 +34,24 @@ namespace gazebo
               // name the animation "test",
               // make it last 10 seconds,
               // and set it on a repeat loop
-              new gazebo::common::PoseAnimation("test2", 25, true));
+              new gazebo::common::PoseAnimation("test", 35, true));
 
         gazebo::common::PoseKeyFrame *key;
 
-        int r = 5;
-
         // set starting location of the box
         key = anim->CreateKeyFrame(0);
-        key->Translation(ignition::math::Vector3d(0, r, 0.05));
+        key->Translation(ignition::math::Vector3d(-2, -8, 0.05));
         key->Rotation(ignition::math::Quaterniond(0, 0, 0));
 
-	      key = anim->CreateKeyFrame(5.0);
-        key->Translation(ignition::math::Vector3d(r, 0, 0.05));
+	    key = anim->CreateKeyFrame(10.0);
+        key->Translation(ignition::math::Vector3d(-2, 0, 0.05));
         key->Rotation(ignition::math::Quaterniond(0, 0, 0));
 
         // set waypoint location after 2 seconds
-        key = anim->CreateKeyFrame(10.0);
-        key->Translation(ignition::math::Vector3d(0, -r, 0.05));
-        key->Rotation(ignition::math::Quaterniond(0, 0, 0));
-
-        key = anim->CreateKeyFrame(15.0);
-        key->Translation(ignition::math::Vector3d(-r, 0, 0.05));
-        key->Rotation(ignition::math::Quaterniond(0, 0, 0));
-
         key = anim->CreateKeyFrame(20.0);
-        key->Translation(ignition::math::Vector3d(0, r, 0.05));
+        key->Translation(ignition::math::Vector3d(-2, 8, 0.05));
         key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+
         // set the animation
         _parent->SetAnimation(anim);
     }
