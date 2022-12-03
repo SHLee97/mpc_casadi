@@ -102,15 +102,21 @@ class NMPCController:
         for i in range(self.N-1):
                 for j in range(len(sfc.polyhedrons[0].normals)):
                     if sfc.polyhedrons[0].normals[j].z == 0.0:
-                        # self.opti.subject_to((self.opt_states[i+1, 0]+(ca.cos(self.opt_states[i+1, 2])*0.1-ca.sin(self.opt_states[i+1, 2])*0.2))*sfc.polyhedrons[0].normals[j].x+
-                        #                     (self.opt_states[i+1, 1]+(ca.sin(self.opt_states[i+1, 2])*0.1+ca.cos(self.opt_states[i+1, 2])*0.2))*sfc.polyhedrons[0].normals[j].y
-                        #                     <=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
+                        self.opti.subject_to((self.opt_states[i+1, 0]+(ca.cos(self.opt_states[i+1, 2])*0.1-ca.sin(self.opt_states[i+1, 2])*0.2))*sfc.polyhedrons[0].normals[j].x+
+                                            (self.opt_states[i+1, 1]+(ca.sin(self.opt_states[i+1, 2])*0.1+ca.cos(self.opt_states[i+1, 2])*0.2))*sfc.polyhedrons[0].normals[j].y
+                                            <=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
 
-                        # self.opti.subject_to((self.opt_states[i+1, 0]+(ca.cos(self.opt_states[i+1, 2])*0.1+ca.sin(self.opt_states[i+1, 2])*0.2))*sfc.polyhedrons[0].normals[j].x+
-                        #                     (self.opt_states[i+1, 1]+(ca.sin(self.opt_states[i+1, 2])*0.1-ca.cos(self.opt_states[i+1, 2])*0.2))*sfc.polyhedrons[0].normals[j].y
-                        #                     <=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
-                        self.opti.subject_to((self.opt_states[i+1, 0]+ca.cos(self.opt_states[i+1, 2])*0.1)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]-ca.sin(self.opt_states[i+1, 2])*0.2)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
-                        self.opti.subject_to((self.opt_states[i+1, 0]+ca.cos(self.opt_states[i+1, 2])*0.1)*sfc.polyhedrons[0].normals[j].x+(self.opt_states[i+1, 1]+ca.sin(self.opt_states[i+1, 2])*0.2)*sfc.polyhedrons[0].normals[j].y<=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
+                        self.opti.subject_to((self.opt_states[i+1, 0]+(ca.cos(self.opt_states[i+1, 2])*0.1+ca.sin(self.opt_states[i+1, 2])*0.2))*sfc.polyhedrons[0].normals[j].x+
+                                            (self.opt_states[i+1, 1]+(ca.sin(self.opt_states[i+1, 2])*0.1-ca.cos(self.opt_states[i+1, 2])*0.2))*sfc.polyhedrons[0].normals[j].y
+                                            <=sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x+sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
+                        # self.opti.subject_to((self.opt_states[i+1, 0] + ca.cos(self.opt_states[i+1, 2])*0.1) * sfc.polyhedrons[0].normals[j].x
+                        #                     +(self.opt_states[i+1, 1] - ca.sin(self.opt_states[i+1, 2])*0.2) * sfc.polyhedrons[0].normals[j].y
+                        #                     <= sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x
+                        #                     +  sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
+                        # self.opti.subject_to((self.opt_states[i+1, 0] + ca.cos(self.opt_states[i+1, 2])*0.1) *sfc.polyhedrons[0].normals[j].x
+                        #                     +(self.opt_states[i+1, 1] + ca.sin(self.opt_states[i+1, 2])*0.2) *sfc.polyhedrons[0].normals[j].y
+                        #                     <= sfc.polyhedrons[0].points[j].x*sfc.polyhedrons[0].normals[j].x
+                        #                     +  sfc.polyhedrons[0].points[j].y*sfc.polyhedrons[0].normals[j].y)
         ## solve the problem
         try:
             # print('solve success')
@@ -121,7 +127,6 @@ class NMPCController:
             return self.u0[0,:]
             pass
         
-        #solve가 안되면 이전 명령으로 움직이게 해봐야되나 solve가 잘 안되네 어렵구만
         ## obtain the control input
         self.u0 = sol.value(self.opt_controls)
         self.next_states = sol.value(self.opt_states)

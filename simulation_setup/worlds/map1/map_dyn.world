@@ -11,6 +11,21 @@
             <ambient>0.0 0.0 0.0 1.0</ambient>
             <shadows>0</shadows>
         </scene>
+
+        <!-- dynamic obstacles -->
+        <include>
+            <uri>model://blue_cylinder_map1_1</uri>      
+            <name>blue_cylinder_map1_1</name>
+        </include>
+        <include>
+            <uri>model://blue_cylinder_map1_2</uri>      
+            <name>blue_cylinder_map1_2</name>
+        </include>
+        <include>
+            <uri>model://blue_cylinder_map1_3</uri>      
+            <name>blue_cylinder_map1_3</name>
+        </include>
+
         <model name="my_mesh">
             <static>true</static>
             <link name="body">

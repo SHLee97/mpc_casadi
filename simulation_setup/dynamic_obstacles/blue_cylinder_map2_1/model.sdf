@@ -1,25 +1,25 @@
 <?xml version="1.0" ?>
 <sdf version="1.5">
-  <model name="drc_practice_blue_cylinder_h1">
+  <model name="blue_cylinder_map2_1">
     <static>true</static>
     <link name="link">
       <visual name="visual">
         <geometry>
           <mesh>
-            <uri>model://drc_practice_blue_cylinder_h1/meshes/cylinder.dae</uri>
+            <uri>model://blue_cylinder_map2_1/meshes/cylinder.dae</uri>
           </mesh>
         </geometry>
       </visual>
       <collision name="collision">
         <geometry>
           <mesh>
-            <uri>model://drc_practice_blue_cylinder_h1/meshes/cylinder.dae</uri>
+            <uri>model://blue_cylinder_map2_1/meshes/cylinder.dae</uri>
           </mesh>
         </geometry>
       </collision>
     </link>
     <static>1</static>
     <allow_auto_disable>1</allow_auto_disable>
-    <plugin name='push_animate' filename='libanimated_box_h1.so'/>
+    <plugin name='push_animate' filename='libanimated_box_map2_1.so'/>
   </model>
 </sdf>

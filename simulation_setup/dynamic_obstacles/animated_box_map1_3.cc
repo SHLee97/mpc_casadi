@@ -19,10 +19,11 @@
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/common.hh>
 #include <stdio.h>
+#include <iostream>
 
 namespace gazebo
 {
-  class AnimatedBox : public ModelPlugin
+  class AnimatedBox_m1_3 : public ModelPlugin
   {
     public: void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
     {
@@ -34,22 +35,29 @@ namespace gazebo
               // name the animation "test",
               // make it last 10 seconds,
               // and set it on a repeat loop
-              new gazebo::common::PoseAnimation("test", 35, true));
+              new gazebo::common::PoseAnimation("map1_3", 40, true));
 
         gazebo::common::PoseKeyFrame *key;
 
         // set starting location of the box
         key = anim->CreateKeyFrame(0);
-        key->Translation(ignition::math::Vector3d(-2, -8, 0.05));
+        key->Translation(ignition::math::Vector3d(0, -8, 0.05));
         key->Rotation(ignition::math::Quaterniond(0, 0, 0));
 
-	    key = anim->CreateKeyFrame(10.0);
-        key->Translation(ignition::math::Vector3d(-2, 0, 0.05));
+	      key = anim->CreateKeyFrame(10.0);
+        key->Translation(ignition::math::Vector3d(-8, -6, 0.05));
         key->Rotation(ignition::math::Quaterniond(0, 0, 0));
 
-        // set waypoint location after 2 seconds
-        key = anim->CreateKeyFrame(20.0);
-        key->Translation(ignition::math::Vector3d(-2, 8, 0.05));
+	      key = anim->CreateKeyFrame(20.0);
+        key->Translation(ignition::math::Vector3d(-8, -8, 0.05));
+        key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+
+	      key = anim->CreateKeyFrame(30.0);
+        key->Translation(ignition::math::Vector3d(0, -6, 0.05));
+        key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+
+        key = anim->CreateKeyFrame(40.0);
+        key->Translation(ignition::math::Vector3d(0, -8, 0.05));
         key->Rotation(ignition::math::Quaterniond(0, 0, 0));
 
         // set the animation
@@ -64,5 +72,5 @@ namespace gazebo
   };
 
   // Register this plugin with the simulator
-  GZ_REGISTER_MODEL_PLUGIN(AnimatedBox)
+  GZ_REGISTER_MODEL_PLUGIN(AnimatedBox_m1_3)
 }

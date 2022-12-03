@@ -11,6 +11,21 @@
             <ambient>0.0 0.0 0.0 1.0</ambient>
             <shadows>0</shadows>
         </scene>
+
+        <!-- dynamic obstacles -->
+        <include>
+            <uri>model://blue_cylinder_map2_1</uri>      
+            <name>blue_cylinder_map2_1</name>
+        </include>
+        <include>
+            <uri>model://blue_cylinder_map2_2</uri>      
+            <name>blue_cylinder_map2_2</name>
+        </include>
+        <include>
+            <uri>model://blue_cylinder_map2_3</uri>      
+            <name>blue_cylinder_map2_3</name>
+        </include>
+
         <model name="my_mesh">
             <static>true</static>
             <link name="body">
@@ -32,5 +47,5 @@
                 </collision>
             </link>
         </model>
-</world>
+    </world>
 </sdf>

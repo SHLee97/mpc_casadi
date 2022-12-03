@@ -10,7 +10,7 @@ $ mkdir build && cd build
 $ cmake ..
 $ make
 
-$ cd ~/simulation_setup
+$ cd ~/simulation_setup/dynamic_obstacles
 $ echo "export GAZEBO_MODEL_PATH=$(pwd):$GAZEBO_MODEL_PATH" >> ~/.bashrc
 $ source ~/.bashrc
 
@@ -22,6 +22,8 @@ $ source ~/.bashrc
 ## How to use
 
 animated_box.cc 는 플러그인 생성용! 여러개 생성하고, 각 waypoint 설정하면 됨.
+
+class 이름은 매번 바꿔줘야함!
 
 CMakeLists.txt에 적절히 추가할 것.
 

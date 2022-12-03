@@ -19,10 +19,11 @@
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/common.hh>
 #include <stdio.h>
+#include <iostream>
 
 namespace gazebo
 {
-  class AnimatedBox : public ModelPlugin
+  class AnimatedBox_m2_1 : public ModelPlugin
   {
     public: void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
     {
@@ -34,32 +35,38 @@ namespace gazebo
               // name the animation "test",
               // make it last 10 seconds,
               // and set it on a repeat loop
-              new gazebo::common::PoseAnimation("test2", 25, true));
+              new gazebo::common::PoseAnimation("map2_1", 90, true));
 
         gazebo::common::PoseKeyFrame *key;
 
-        int r = 5;
-
         // set starting location of the box
         key = anim->CreateKeyFrame(0);
-        key->Translation(ignition::math::Vector3d(0, r, 0.05));
+        key->Translation(ignition::math::Vector3d(-7, 8, 0.05));
         key->Rotation(ignition::math::Quaterniond(0, 0, 0));
 
-	      key = anim->CreateKeyFrame(5.0);
-        key->Translation(ignition::math::Vector3d(r, 0, 0.05));
+	      key = anim->CreateKeyFrame(15.0);
+        key->Translation(ignition::math::Vector3d(1, 1, 0.05));
         key->Rotation(ignition::math::Quaterniond(0, 0, 0));
 
         // set waypoint location after 2 seconds
-        key = anim->CreateKeyFrame(10.0);
-        key->Translation(ignition::math::Vector3d(0, -r, 0.05));
+        key = anim->CreateKeyFrame(30.0);
+        key->Translation(ignition::math::Vector3d(5, 0, 0.05));
         key->Rotation(ignition::math::Quaterniond(0, 0, 0));
 
-        key = anim->CreateKeyFrame(15.0);
-        key->Translation(ignition::math::Vector3d(-r, 0, 0.05));
+        key = anim->CreateKeyFrame(45.0);
+        key->Translation(ignition::math::Vector3d(7, -7, 0.05));
         key->Rotation(ignition::math::Quaterniond(0, 0, 0));
 
-        key = anim->CreateKeyFrame(20.0);
-        key->Translation(ignition::math::Vector3d(0, r, 0.05));
+        key = anim->CreateKeyFrame(60.0);
+        key->Translation(ignition::math::Vector3d(5, 0, 0.05));
+        key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+
+        key = anim->CreateKeyFrame(75.0);
+        key->Translation(ignition::math::Vector3d(1, 1, 0.05));
+        key->Rotation(ignition::math::Quaterniond(0, 0, 0));
+
+        key = anim->CreateKeyFrame(90.0);
+        key->Translation(ignition::math::Vector3d(-7, 8, 0.05));
         key->Rotation(ignition::math::Quaterniond(0, 0, 0));
         // set the animation
         _parent->SetAnimation(anim);
@@ -73,5 +80,5 @@ namespace gazebo
   };
 
   // Register this plugin with the simulator
-  GZ_REGISTER_MODEL_PLUGIN(AnimatedBox)
+  GZ_REGISTER_MODEL_PLUGIN(AnimatedBox_m2_1)
 }

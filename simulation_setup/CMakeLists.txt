@@ -14,14 +14,23 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 
 # Create libraries and executables
 
-add_library(animated_box_h1 SHARED animated_box_h1.cc)
-target_link_libraries(animated_box_h1 ${GAZEBO_LIBRARIES})
+add_library(animated_box_map1_1 SHARED dynamic_obstacles/animated_box_map1_1.cc)
+target_link_libraries(animated_box_map1_1 ${GAZEBO_LIBRARIES})
 
-add_library(animated_box_v1 SHARED animated_box_v1.cc)
-target_link_libraries(animated_box_v1 ${GAZEBO_LIBRARIES})
+add_library(animated_box_map1_2 SHARED dynamic_obstacles/animated_box_map1_2.cc)
+target_link_libraries(animated_box_map1_2 ${GAZEBO_LIBRARIES})
 
-add_library(animated_box SHARED animated_box.cc)
-target_link_libraries(animated_box ${GAZEBO_LIBRARIES})
+add_library(animated_box_map1_3 SHARED dynamic_obstacles/animated_box_map1_3.cc)
+target_link_libraries(animated_box_map1_3 ${GAZEBO_LIBRARIES})
+
+add_library(animated_box_map2_1 SHARED dynamic_obstacles/animated_box_map2_1.cc)
+target_link_libraries(animated_box_map2_1 ${GAZEBO_LIBRARIES})
+
+add_library(animated_box_map2_2 SHARED dynamic_obstacles/animated_box_map2_2.cc)
+target_link_libraries(animated_box_map2_2 ${GAZEBO_LIBRARIES})
+
+add_library(animated_box_map2_3 SHARED dynamic_obstacles/animated_box_map2_3.cc)
+target_link_libraries(animated_box_map2_3 ${GAZEBO_LIBRARIES})
 
 
 # add_executable(integrated_main integrated_main.cc)
