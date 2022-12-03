@@ -1,7 +1,7 @@
 <launch>
     <!-- Parameter -->
     <rosparam file="$(find mpc_casadi)/params/constraints.yaml" command="load" />
-    <arg name="map_name" default="map2" doc="[map1, map2, map3]"/>
+    <arg name="map_name" default="map1" doc="[map1, map2, map3]"/>
     <arg name="world" default="map_dyn" doc="[map, map_dyn]"/>
     <arg name="target_ns" default="target"/>
     <arg name="agent_ns" default="agent"/>
@@ -18,7 +18,7 @@
     <!-- Gazebo World -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="world_name" value="$(find mpc_casadi)/simulation_setup/worlds/$(arg map_name)/$(arg world).world"/>
-        <arg name="paused" value="false"/>
+        <arg name="paused" value="true"/>
         <arg name="use_sim_time" value="true"/>
         <arg name="gui" value="true"/>
         <arg name="headless" value="false"/>
@@ -29,9 +29,8 @@
     <!-- Spawn Target & Agent -->
     <group ns="$(arg target_ns)">
         <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
-        <arg name="x" default="1.5"/>
-        <!-- <arg name="x" default="5"/> -->
-        <arg name="y" default="1.0"/>
+        <arg name="x" default="0.0"/>
+        <arg name="y" default="0.0"/>
         <arg name="z" default="0.0"/>
         <arg name="yaw" default="1.57"/>
         <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
@@ -40,10 +39,16 @@
     </group>
     <group ns="$(arg agent_ns)">
         <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
-        <arg name="x" default="2.0"/>
-        <arg name="y" default="-1.0"/>
+        <!-- map1 -->
+        <arg name="x" default="0.0"/>
+        <arg name="y" default="-2.0"/>
         <arg name="z" default="0.0"/>
         <arg name="yaw" default="1.57"/>
+        <!-- map2 -->
+        <!-- <arg name="x" default="3.0"/>
+        <arg name="y" default="0.0"/>
+        <arg name="z" default="0.0"/>
+        <arg name="yaw" default="3.14"/> -->
         <param name="robot_description" command="$(find xacro)/xacro --inorder $(find mpc_casadi)/simulation_setup/robots/turtlebot3_$(arg model)_up_scan.urdf.xacro" />
         <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" 
             args="-urdf -model turtlebot3_$(arg agent_ns) -x $(arg x) -y $(arg y) -z $(arg z) -R 0 -P 0 -Y $(arg yaw) -param robot_description" />

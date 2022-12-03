@@ -65,9 +65,22 @@ class nmpc_node():
 
         ## maintain circle range
         self.d_candidate = []  
-        self.radius = 0.5
+        self.radius = 0.9
 
-        self.verbose = True
+        ## evaluate
+        self.e_cnt = 0
+        self.e_dis = 0
+        self.e_yaw = 0
+        self.e_dis_tot = 0
+        self.e_yaw_tot = 0
+        self.e_dis_mean = 0
+        self.e_yaw_mean = 0
+        self.e_dis_max = 0
+        self.e_dis_min = 100000
+        self.e_yaw_max = 0
+        self.e_yaw_min = 100000
+
+        self.verbose = False
 
         self.initailize()
 
@@ -112,7 +125,28 @@ class nmpc_node():
 
         next_traj = np.array([pose_cur, pose_tar])
         next_traj, error = self.correct_state(next_traj)
-        tar_idx = self.target_compute(next_traj, error, self.radius)
+        tar_idx, self.e_dis, self.e_yaw  = self.target_compute(next_traj, error, self.radius)
+
+        self.e_cnt = self.e_cnt + 1
+        self.e_dis_tot = self.e_dis_tot + self.e_dis
+        self.e_yaw_tot = self.e_yaw_tot + self.e_yaw
+        self.e_dis_mean = self.e_dis_tot / self.e_cnt
+        self.e_yaw_mean = self.e_yaw_tot / self.e_cnt
+        if self.e_dis < self.e_dis_min: self.e_dis_min = self.e_dis
+        if self.e_dis > self.e_dis_max: self.e_dis_max = self.e_dis
+        if self.e_yaw < self.e_yaw_min: self.e_yaw_min = self.e_yaw
+        if self.e_yaw > self.e_yaw_max: self.e_yaw_max = self.e_yaw
+
+        e_yaw_deg = self.e_yaw * 180 / np.pi
+        e_yaw_mean_deg = self.e_yaw_mean * 180 / np.pi
+        e_yaw_min_deg = self.e_yaw_min * 180 / np.pi
+        e_yaw_max_deg = self.e_yaw_max * 180 / np.pi
+        
+
+        print("--------")
+        print(self.e_cnt)
+        print(round(self.e_dis,3), round(e_yaw_deg,3), round(self.e_dis_mean,3), round(e_yaw_mean_deg,3))
+        print(round(self.e_dis_max,3), round(e_yaw_max_deg,3), round(self.e_dis_min,3), round(e_yaw_min_deg,3))
 
         next_traj = np.array([pose_cur, self.d_candidate[tar_idx]])
         next_traj, _ = self.correct_state(next_traj)
@@ -151,20 +185,27 @@ class nmpc_node():
         theta = np.arctan2(error[1], error[0])  # atan(dy/dx)
         nx, ny, nyaw = traj[0]  # now agent
         cx, cy, cyaw = traj[1]  # center of target
-        M = 10
+        M = 15
         for t in range(M):
-            self.d_candidate.append([cx + np.cos(2*np.pi*t/M), 
-                                    cy + np.sin(2*np.pi*t/M), 
+            self.d_candidate.append([cx + radius*np.cos(2*np.pi*t/M), 
+                                    cy + radius*np.sin(2*np.pi*t/M), 
                                     2*np.pi*t/M + np.pi])
+        
+        dis_gt = self.get_distance([nx, ny], [cx, cy]) 
         min_d = 1000
         for i, c in enumerate(self.d_candidate):
+            in_polyhedron = True
+            for j in range(len(self.sfc.polyhedrons[0].normals)):
+                if self.sfc.polyhedrons[0].normals[j].z == 0.0 and c[0]*self.sfc.polyhedrons[0].normals[j].x+c[1]*self.sfc.polyhedrons[0].normals[j].y >self.sfc.polyhedrons[0].points[j].x*self.sfc.polyhedrons[0].normals[j].x+self.sfc.polyhedrons[0].points[j].y*self.sfc.polyhedrons[0].normals[j].y:
+                    in_polyhedron = False
+                    break
             d = self.get_distance([nx, ny], [c[0], c[1]])
-            if d < min_d:
+            if d < min_d and in_polyhedron:
                 min_d = d
                 min_idx = i
         yaw_diff = nyaw - theta
         # print(min_d, min_idx)
-        return min_idx
+        return min_idx, dis_gt, yaw_diff
 
     def correct_state(self, traj):
         error = traj[0,:] - traj[1,:]

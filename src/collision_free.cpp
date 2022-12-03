@@ -57,7 +57,7 @@ int main(int argc, char ** argv){
       //Using ellipsoid decomposition
       EllipsoidDecomp2D decomp_util;
       decomp_util.set_obs(obs2d);
-      decomp_util.set_local_bbox(Vec2f(3, 3));
+      decomp_util.set_local_bbox(Vec2f(8, 8));
       decomp_util.dilate(path); //Set max iteration number of 10, do fix the path
       decomp_ros_msgs::PolyhedronArray poly_msg = DecompROS::polyhedron_array_to_ros(decomp_util.get_polyhedrons());
       auto polys = decomp_util.get_polyhedrons();
