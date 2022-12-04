@@ -12,6 +12,8 @@ from visualization_msgs.msg import Marker, MarkerArray
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 from decomp_ros_msgs.msg import PolyhedronArray
 
+import matplotlib.pyplot as plt
+
 import sys
 import signal
 # sys.path.append("/home/lsh/ee688_ws/src/mpc_casadi/src/")
@@ -79,6 +81,8 @@ class nmpc_node():
         self.e_dis_min = 100000
         self.e_yaw_max = 0
         self.e_yaw_min = 100000
+        self.e_dis_arr = []
+        self.e_yaw_arr = []
 
         self.verbose = False
 
@@ -137,10 +141,18 @@ class nmpc_node():
         if self.e_yaw < self.e_yaw_min: self.e_yaw_min = self.e_yaw
         if self.e_yaw > self.e_yaw_max: self.e_yaw_max = self.e_yaw
 
+        self.e_dis_arr.append(self.e_dis)
+        self.e_yaw_arr.append(self.e_yaw)
+        np.save("/home/dklee98/git/term_ws/src/mpc_casadi/dis.npy", np.array(self.e_dis_arr))
+        np.save("/home/dklee98/git/term_ws/src/mpc_casadi/yaw.npy", np.array(self.e_yaw_arr))
+
         e_yaw_deg = self.e_yaw * 180 / np.pi
         e_yaw_mean_deg = self.e_yaw_mean * 180 / np.pi
         e_yaw_min_deg = self.e_yaw_min * 180 / np.pi
         e_yaw_max_deg = self.e_yaw_max * 180 / np.pi
+
+
+        
         
 
         print("--------")
