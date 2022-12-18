@@ -1,8 +1,10 @@
-# mpc_casadi
-맞다 동규 push 했는데 이거 decompROS도 깔아야 sfc 돌아간디
-https://github.com/sikang/DecompROS
+# Setup
+This algorithm is tested in Ubuntu 20.04 ROS noetic with python 3.x
 
-# dynamic object environment setting
+## Requirement for polyhedron
+### decompROS (https://github.com/sikang/DecompROS)
+
+## For dynamic object environment
 
 ```
 $ cd ~/simulation_setup
@@ -19,34 +21,33 @@ $ echo "export GAZEBO_PLUGIN_PATH=$(pwd):$GAZEBO_PLUGIN_PATH" >> ~/.bashrc
 $ source ~/.bashrc
 ```
 
-## How to use
+### How to add dynamic objects
 
-animated_box.cc 는 플러그인 생성용! 여러개 생성하고, 각 waypoint 설정하면 됨.
-
-class 이름은 매번 바꿔줘야함!
-
-CMakeLists.txt에 적절히 추가할 것.
-
-"drc_practice_blue_cyclinder" 는 동적 장애물로 가져온 모델.
-
-model.sdf 안에 다음 tag 추가할 것.
-
+1. Add dynamic model (model.config & sdf)
+2. Make animation plugin (animated_box.cc)
+3. Modify the trajectory and class name in xxx.cc file
+4. Add following tag to model.sdf
 ```
-        ...
-        <static>1</static>
-        <allow_auto_disable>1</allow_auto_disable>
-        <plugin name='push_animate' filename='libanimated_box.so'/>
+    ...
+    <static>1</static>
+    <allow_auto_disable>1</allow_auto_disable>
+    <plugin name='push_animate' filename='libanimated_box.so'/>
     </model>
-</sdf>
+    </sdf>
+```
+5. Add new plugin to CMakeLists.txt in simulation_setup folder
+6. Call new model in .world file as follows:
+
+```
+    <include>
+        <uri>model://drc_practice_blue_cylinder</uri>      
+        <name>blue_cylinder</name>
+    </include>
 ```
 
-원하는 map.world 들어가서, 아래처럼 모델 불러오면 됨
+# How to start
 ```
-        <include>
-            <uri>model://drc_practice_blue_cylinder</uri>      
-            <name>blue_cylinder</name>
-        </include>
-```
-여러개 불러올거면, 각 모델 복붙한 다음에 이름 안꼬이게 자알 설정하기.
-
-끄읕!
+    roslaunch mpc_casadi world_setup.launch
+    roslaunch tracking_nmpc_dk.launch
+    rviz -d rviz.rviz
+``` 
