@@ -62,16 +62,20 @@ class NMPCController:
         obj = 0
         for i in range(self.N):
             state_error_ = self.opt_states[i, :] - self.opt_x_ref[i+1, :]
-            # control_error_ = self.opt_controls[i, :] - self.opt_u_ref[i, :]
+            if i>0:
+                control_error_ = self.opt_controls[i, :] - self.opt_controls[i-1, :]
+            else:
+                control_error_ = self.opt_controls[i, :] - self.opt_controls[i, :]
             control_error_ = self.opt_controls[i, :]
             obj = obj + ca.mtimes([state_error_, self.Q, state_error_.T]) \
                         + ca.mtimes([control_error_, self.R, control_error_.T])
         self.opti.minimize(obj)
 
         # boundary and control conditions
-        self.opti.subject_to(self.opti.bounded(self.min_vx, vx, self.max_vx))
-        self.opti.subject_to(self.opti.bounded(self.min_vy, vy, self.max_vy))
-        self.opti.subject_to(self.opti.bounded(self.min_omega, omega, self.max_omega))
+        for i in range(self.N):
+            self.opti.subject_to(self.opti.bounded(self.min_vx, self.opt_controls[i,0], self.max_vx))
+            self.opti.subject_to(self.opti.bounded(self.min_vy, self.opt_controls[i,1], self.max_vy))
+            self.opti.subject_to(self.opti.bounded(self.min_omega, self.opt_controls[i,2], self.max_omega))
 
         opts_setting = {'ipopt.max_iter':2000,
                         'ipopt.print_level':0,

@@ -129,7 +129,7 @@ def nmpc_node():
     # pq = quaternion2Yaw(odom.pose.pose.orientation)\
 
     # Use GT: For simple test (rnlcksgdk)
-    px = 10
+    px = 1
     py = 1
     pq = 0
     pos = np.array([px, py, pq])
@@ -185,6 +185,8 @@ def nmpc_node():
             pub_pre_path.publish(predict_msg)
 
             count += 1
+
+            print(vel)
 
             # Use GT: For simple test (rnlcksgdk)
             px = px + vel[0]*T*np.cos(pq) - vel[1]*T*np.sin(pq)
